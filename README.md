@@ -1,9 +1,10 @@
 # nepque
 Coupon Site in Nepal
-Overview
+
 NepQue is a coupon site developed as a college project to provide users with a seamless experience in discovering and applying coupons for their favorite products and services. Whether you're an avid online shopper or someone who loves to save money, NepQue is here to enhance your shopping journey.
 
-Features
+Features:
+
 Extensive Coupon Database: NepQue boasts a comprehensive collection of coupons from various retailers, ensuring that you have access to a diverse range of discounts.
 
 User-Friendly Interface: Our intuitive and user-friendly interface makes it easy for users to search, browse, and apply coupons effortlessly.
