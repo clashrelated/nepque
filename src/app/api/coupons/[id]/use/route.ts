@@ -5,13 +5,12 @@ import { authOptions } from '@/lib/auth'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Session is optional; anonymous users can redeem
     const session = await getServerSession(authOptions)
-
-    const { id } = params
+    const { id } = await context.params
 
     // If logged in, optionally verify user exists (non-blocking)
     let userId: string | undefined = undefined
