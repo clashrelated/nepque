@@ -1,0 +1,272 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for both regular users and admins
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  password      String?   // For credentials authentication
+  role          UserRole  @default(USER)
+  isActive       Boolean   @default(true)  // User account status
+  phone         String?
+  settings      Json?     // User preferences and settings
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  favoriteCoupons FavoriteCoupon[]
+  couponUsages  CouponUsage[]
+  
+  @@map("users")
+}
+
+// NextAuth.js required models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Brand model for companies offering coupons
+model Brand {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  logo        String?
+  website     String?
+  isActive    Boolean  @default(true)
+  sponsored   Boolean  @default(false)
+  sponsorWeight Int    @default(0)
+  // SEO fields
+  seoTitle    String?
+  seoDescription String?
+  seoKeywords String?
+  ogImage     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  coupons     Coupon[]
+  
+  @@map("brands")
+}
+
+// Category model for organizing coupons
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  icon        String?
+  color       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  coupons     Coupon[]
+  
+  @@map("categories")
+}
+
+// Main coupon model
+model Coupon {
+  id            String        @id @default(cuid())
+  title         String
+  description   String?
+  code          String?       // Optional for deals without codes
+  type          CouponType
+  discountType  DiscountType
+  discountValue Float         // Percentage or fixed amount
+  minOrderValue Float?        // Minimum order value required
+  maxDiscount   Float?        // Maximum discount amount
+  isActive      Boolean       @default(true)
+  isVerified    Boolean       @default(false)
+  isExclusive   Boolean       @default(false)
+  usageLimit    Int?          // Total usage limit
+  usedCount     Int           @default(0)
+  sponsored     Boolean       @default(false)
+  sponsorWeight Int           @default(0)
+  startDate     DateTime?
+  endDate       DateTime?
+  terms         String?       @db.Text
+  image         String?
+  affiliateUrl  String?       // Link to brand website
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  // Relations
+  brandId       String
+  brand         Brand         @relation(fields: [brandId], references: [id])
+  categoryId    String
+  category      Category      @relation(fields: [categoryId], references: [id])
+  favoriteCoupons FavoriteCoupon[]
+  couponUsages  CouponUsage[]
+  
+  @@map("coupons")
+}
+
+// User's favorite coupons
+model FavoriteCoupon {
+  id        String   @id @default(cuid())
+  userId    String
+  couponId  String
+  createdAt DateTime @default(now())
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coupon    Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, couponId])
+  @@map("favorite_coupons")
+}
+
+// Track coupon usage to prevent abuse
+model CouponUsage {
+  id        String   @id @default(cuid())
+  userId    String?
+  couponId  String
+  usedAt    DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+  
+  // Relations
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  coupon    Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  
+  @@map("coupon_usages")
+}
+
+// Audit log for tracking admin actions and security events
+model AuditLog {
+  id           String   @id @default(cuid())
+  action       String   // AuditAction enum value
+  userId       String   // User who performed the action
+  userEmail    String   // Email of the user
+  userRole     String   // Role of the user
+  resourceType String   // Type of resource affected (User, Coupon, Brand, etc.)
+  resourceId   String?  // ID of the affected resource
+  resourceName String?  // Name of the affected resource
+  oldValues    Json?    // Previous values (for updates)
+  newValues    Json?    // New values (for updates)
+  ipAddress    String   // IP address of the request
+  userAgent    String   // User agent of the request
+  endpoint     String   // API endpoint accessed
+  method       String   // HTTP method used
+  timestamp    DateTime @default(now())
+  metadata     Json?    // Additional metadata
+  
+  @@map("audit_logs")
+}
+
+// Enums
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum CouponType {
+  COUPON_CODE
+  DEAL
+  CASHBACK
+  FREE_SHIPPING
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+  FREE_SHIPPING
+  BUY_ONE_GET_ONE
+}
+
+// Submissions from users for brands/coupons
+model UserSubmission {
+  id        String           @id @default(cuid())
+  userId    String?
+  type      SubmissionType
+  status    SubmissionStatus @default(PENDING)
+  payload   Json
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@map("user_submissions")
+}
+
+enum SubmissionType {
+  BRAND
+  COUPON
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Contact submissions from Contact and Partner pages
+model ContactSubmission {
+  id        String      @id @default(cuid())
+  type      ContactType
+  name      String
+  email     String
+  company   String?
+  message   String
+  budget    String?
+  goals     String?
+  createdAt DateTime    @default(now())
+
+  @@map("contacts")
+}
+
+enum ContactType {
+  CONTACT
+  PARTNER
+}
