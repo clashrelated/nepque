@@ -23,7 +23,8 @@ export const POST = withSecurity(
       const submission = await prisma.userSubmission.create({
         data: {
           type,
-          payload,
+          // Explicitly cast to Prisma Json type
+          payload: payload as unknown as import('@prisma/client').Prisma.InputJsonValue,
           status: 'PENDING',
           ...(userId ? { userId } : {}),
         },
