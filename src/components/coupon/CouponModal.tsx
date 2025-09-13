@@ -112,19 +112,19 @@ export default function CouponModal({ coupon, isOpen, onClose }: CouponModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-gray-900">
+      <DialogContent className="max-w-2xl max-h-[95vh] flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0">
+          <DialogTitle className="text-lg sm:text-xl font-bold text-gray-900 line-clamp-2">
             {coupon.title}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="flex-1 overflow-y-auto px-6 space-y-4">
           {/* Brand and Category Info */}
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
             <div className="flex items-center space-x-2">
               {coupon.brand.logo ? (
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
                   <Image
                     src={coupon.brand.logo}
                     alt={`${coupon.brand.name} logo`}
@@ -137,13 +137,13 @@ export default function CouponModal({ coupon, isOpen, onClose }: CouponModalProp
                   />
                 </div>
               ) : (
-                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                  <span className="text-sm font-bold text-gray-600">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-xs sm:text-sm font-bold text-gray-600">
                     {coupon.brand.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
               )}
-              <span className="font-medium text-gray-900">{coupon.brand.name}</span>
+              <span className="text-sm sm:text-base font-medium text-gray-900">{coupon.brand.name}</span>
             </div>
             
             <div className="flex items-center space-x-2">
@@ -174,17 +174,17 @@ export default function CouponModal({ coupon, isOpen, onClose }: CouponModalProp
 
           {/* Main Offer Display */}
           <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-            <CardContent className="p-6 text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">
+            <CardContent className="p-4 sm:p-6 text-center">
+              <div className="text-2xl sm:text-4xl font-bold text-blue-600 mb-2">
                 {formatDiscount(coupon)}
               </div>
               {(coupon.minOrderValue !== null && coupon.minOrderValue !== undefined && coupon.minOrderValue > 0) && (
-                <div className="text-sm text-gray-600 mb-4">
+                <div className="text-xs sm:text-sm text-gray-600 mb-2">
                   Min. order: Rs{coupon.minOrderValue}
                 </div>
               )}
               {(coupon.maxDiscount !== null && coupon.maxDiscount !== undefined && coupon.maxDiscount > 0) && (
-                <div className="text-sm text-gray-600">
+                <div className="text-xs sm:text-sm text-gray-600">
                   Max. discount: Rs{coupon.maxDiscount}
                 </div>
               )}
@@ -193,35 +193,35 @@ export default function CouponModal({ coupon, isOpen, onClose }: CouponModalProp
 
           {/* Description */}
           <div>
-            <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
-            <p className="text-gray-600">{coupon.description}</p>
+            <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1">Description</h3>
+            <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">{coupon.description}</p>
           </div>
 
           {/* Coupon Code */}
           {coupon.code && (
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Coupon Code</h3>
-              <div className="flex items-center space-x-2">
-                <div className="flex-1 p-3 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                  <code className="font-mono text-lg font-bold text-gray-900">
+              <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">Coupon Code</h3>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                <div className="flex-1 p-2 sm:p-3 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                  <code className="font-mono text-sm sm:text-lg font-bold text-gray-900 break-all">
                     {coupon.code}
                   </code>
                 </div>
                 <Button
                   onClick={() => copyCode(coupon.code!)}
                   variant="outline"
-                  size="lg"
-                  className="px-6"
+                  size="sm"
+                  className="px-4 sm:px-6"
                 >
                   {copiedCode === coupon.code ? (
                     <>
-                      <Check className="h-4 w-4 mr-2" />
-                      Copied!
+                      <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      <span className="text-xs sm:text-sm">Copied!</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copy
+                      <Copy className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      <span className="text-xs sm:text-sm">Copy</span>
                     </>
                   )}
                 </Button>
@@ -231,8 +231,8 @@ export default function CouponModal({ coupon, isOpen, onClose }: CouponModalProp
 
           {/* Expiry Date */}
           {coupon.endDate && (
-            <div className="flex items-center text-sm text-gray-600">
-              <Calendar className="h-4 w-4 mr-2" />
+            <div className="flex items-center text-xs sm:text-sm text-gray-600">
+              <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               <span>Expires: {formatDate(coupon.endDate)}</span>
             </div>
           )}
@@ -240,45 +240,47 @@ export default function CouponModal({ coupon, isOpen, onClose }: CouponModalProp
           {/* Terms and Conditions */}
           {coupon.terms && (
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Terms & Conditions</h3>
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-700 whitespace-pre-wrap">
+              <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">Terms & Conditions</h3>
+              <div className="p-3 sm:p-4 bg-gray-50 rounded-lg">
+                <p className="text-xs sm:text-sm text-gray-700 whitespace-pre-wrap line-clamp-3">
                   {coupon.terms}
                 </p>
               </div>
             </div>
           )}
 
+        </div>
+
+        {/* Fixed Action Buttons and Stats - Always visible at bottom */}
+        <div className="flex-shrink-0 px-6 pb-6 pt-4 bg-white border-t border-gray-200">
           {/* Action Buttons */}
-          <div className="flex space-x-3 pt-4">
+          <div className="flex space-x-2 sm:space-x-3 mb-3">
             <Button
               className="flex-1"
-              size="lg"
+              size="sm"
               onClick={() => handleCouponClick(coupon.id, coupon.affiliateUrl || '')}
               disabled={usageLoading}
             >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              {usageLoading ? 'Tracking...' : 'Redeem'}
+              <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="text-xs sm:text-sm">{usageLoading ? 'Tracking...' : 'Redeem'}</span>
             </Button>
             <Button
               variant="outline"
-              size="lg"
-              className="px-6"
+              size="sm"
+              className="px-3 sm:px-6"
               onClick={() => toggleFavorite(coupon.id)}
               disabled={favoritesLoading}
             >
-              <Heart className={`h-4 w-4 mr-2 ${isFavorite(coupon.id) ? 'fill-red-500 text-red-500' : ''}`} />
-              {isFavorite(coupon.id) ? 'Saved' : 'Save'}
+              <Heart className={`h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 ${isFavorite(coupon.id) ? 'fill-red-500 text-red-500' : ''}`} />
+              <span className="text-xs sm:text-sm">{isFavorite(coupon.id) ? 'Saved' : 'Save'}</span>
             </Button>
           </div>
 
           {/* Usage Stats */}
           {coupon._count && (
-            <div className="pt-4 border-t border-gray-200">
-              <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>Used {coupon._count.couponUsages || 0} times</span>
-                <span>Saved by {coupon._count.favoriteCoupons || 0} users</span>
-              </div>
+            <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500">
+              <span>Used {coupon._count.couponUsages || 0} times</span>
+              <span>Saved by {coupon._count.favoriteCoupons || 0} users</span>
             </div>
           )}
         </div>
