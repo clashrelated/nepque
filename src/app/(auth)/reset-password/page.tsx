@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [token, setToken] = useState('')
@@ -50,36 +50,57 @@ export default function ResetPasswordPage() {
   }
 
   return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Reset password</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <Input
+            type="password"
+            placeholder="New password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Input
+            type="password"
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? 'Updating...' : 'Set new password'}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
     <>
       <Header />
       <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto">
           <div className="min-h-[60vh] flex items-start md:items-center justify-center py-10">
             <div className="w-full max-w-md">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Reset password</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={onSubmit} className="space-y-4">
-                    <Input
-                      type="password"
-                      placeholder="New password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <Input
-                      type="password"
-                      placeholder="Confirm password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                    <Button type="submit" disabled={loading} className="w-full">
-                      {loading ? 'Updating...' : 'Set new password'}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
+              <Suspense fallback={
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Reset password</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              }>
+                <ResetPasswordForm />
+              </Suspense>
             </div>
           </div>
         </div>
@@ -88,5 +109,3 @@ export default function ResetPasswordPage() {
     </>
   )
 }
-
-
