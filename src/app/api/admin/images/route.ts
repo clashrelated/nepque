@@ -3,6 +3,25 @@ import { list } from '@vercel/blob'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
+function getContentTypeFromFilename(filename: string): string {
+  const ext = filename.toLowerCase().split('.').pop()
+  switch (ext) {
+    case 'jpg':
+    case 'jpeg':
+      return 'image/jpeg'
+    case 'png':
+      return 'image/png'
+    case 'gif':
+      return 'image/gif'
+    case 'webp':
+      return 'image/webp'
+    case 'svg':
+      return 'image/svg+xml'
+    default:
+      return 'application/octet-stream'
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -22,10 +41,10 @@ export async function GET(request: NextRequest) {
       prefix: folder ? `${folder}/` : undefined,
     })
 
-    // Filter only image files
+    // Filter only image files based on file extension
     const imageBlobs = blobs.filter(blob => {
-      const contentType = blob.contentType || ''
-      return contentType.startsWith('image/')
+      const filename = blob.pathname.toLowerCase()
+      return filename.match(/\.(jpg|jpeg|png|gif|webp|svg)$/)
     })
 
     return NextResponse.json({
@@ -36,7 +55,7 @@ export async function GET(request: NextRequest) {
           filename: blob.pathname,
           size: blob.size,
           uploadedAt: blob.uploadedAt,
-          contentType: blob.contentType
+          contentType: getContentTypeFromFilename(blob.pathname)
         })),
         pagination: {
           hasMore,
