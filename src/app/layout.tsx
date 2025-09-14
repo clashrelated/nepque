@@ -4,6 +4,7 @@ import { logoFont } from '@/lib/fonts'
 import "./globals.css";
 import { Toaster } from '@/components/ui/sonner'
 import SessionProvider from '@/components/providers/SessionProvider'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 
 const inter = Inter({
   subsets: ["latin"],
@@ -53,6 +54,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${logoFont.variable}`}>
       <body className="font-sans antialiased">
+        <GoogleAnalytics />
         <SessionProvider>
           {children}
           <Toaster />
