@@ -10,7 +10,7 @@ interface UsageRow {
   usedAt: string
   ipAddress: string | null
   userAgent: string | null
-  user: { id: string; name: string | null; email: string }
+  user: { id: string; name: string | null; email: string } | null
   coupon: { id: string; title: string; brand: { id: string; name: string } }
 }
 
@@ -39,8 +39,8 @@ export default function UsageAnalyticsPage() {
     return (
       r.coupon.title.toLowerCase().includes(q) ||
       r.coupon.brand.name.toLowerCase().includes(q) ||
-      (r.user.name?.toLowerCase() || '').includes(q) ||
-      r.user.email.toLowerCase().includes(q)
+      (r.user?.name?.toLowerCase() || '').includes(q) ||
+      (r.user?.email?.toLowerCase() || '').includes(q)
     )
   })
 
@@ -95,7 +95,7 @@ export default function UsageAnalyticsPage() {
                         <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{new Date(r.usedAt).toLocaleString()}</td>
                         <td className="px-4 py-3">{r.coupon.title}</td>
                         <td className="px-4 py-3 whitespace-nowrap">{r.coupon.brand.name}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">{r.user.name || r.user.email}</td>
+                        <td className="px-4 py-3 whitespace-nowrap">{r.user?.name || r.user?.email || 'Unknown User'}</td>
                         <td className="px-4 py-3 whitespace-nowrap">{r.ipAddress || '-'}</td>
                         <td className="px-4 py-3">{r.userAgent || '-'}</td>
                       </tr>
