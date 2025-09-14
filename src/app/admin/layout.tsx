@@ -18,7 +18,8 @@ import {
   User,
   MousePointer,
   FilePlus2,
-  BookText
+  BookText,
+  Image
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -36,6 +37,7 @@ const navigation = [
   { name: 'Coupons', href: '/admin/coupons', icon: Tag },
   { name: 'Brands', href: '/admin/brands', icon: Building2 },
   { name: 'Categories', href: '/admin/categories', icon: FolderOpen },
+  { name: 'Images', href: '/admin/images', icon: Image },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
   { name: 'Usage Analytics', href: '/admin/usage-analytics', icon: MousePointer },
   { name: 'Submissions', href: '/admin/submissions', icon: FilePlus2 },
