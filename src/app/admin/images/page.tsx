@@ -44,13 +44,13 @@ export default function AdminImagesPage() {
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedFolder, setSelectedFolder] = useState('')
+  const [selectedFolder, setSelectedFolder] = useState('all')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [pagination, setPagination] = useState<PaginationData>({ hasMore: false, nextCursor: null })
   const [showUpload, setShowUpload] = useState(false)
 
   const folders = [
-    { value: '', label: 'All Folders' },
+    { value: 'all', label: 'All Folders' },
     { value: 'general', label: 'General' },
     { value: 'brands', label: 'Brands' },
     { value: 'categories', label: 'Categories' },
@@ -66,7 +66,7 @@ export default function AdminImagesPage() {
     try {
       setLoading(true)
       const params = new URLSearchParams()
-      if (selectedFolder) params.append('folder', selectedFolder)
+      if (selectedFolder && selectedFolder !== 'all') params.append('folder', selectedFolder)
       if (cursor) params.append('cursor', cursor)
       params.append('limit', '20')
 
